@@ -1,5 +1,11 @@
 #pragma once
 
+enum ErrLevel
+{
+	None,
+	Warn,
+	Critical
+};
 
 template <typename T>
 class Node
@@ -18,6 +24,11 @@ public:
 		next (ptrNext)
 	{
 
+	}
+
+	ErrLevel Ok ()
+	{
+		return ErrLevel::None;
 	}
 
 	T data;

@@ -191,6 +191,11 @@ public:
 		return currSize;
 	}
 
+	ErrLevel Ok ()
+	{
+		return ErrLevel::None;
+	}
+
 protected:
 	Node <T> * start, * end;
 	unsigned size;
