@@ -16,7 +16,7 @@ public:
 
 	~List ()
 	{
-
+		clear ();
 	}
 
 	Node <T> * push_back (T data)
@@ -68,6 +68,32 @@ public:
 		Node <T> * add = new Node <T> (data, nullptr, start);
 		start->prev = add;
 		return start = add;
+	}
+
+	Node <T> * push_after (T data, Node <T> * el)
+	{
+		if (el == end)
+			return push_back (data);
+
+		Node <T> * add = new Node <T> (data, el, el->next);
+		el->next->prev = add;
+		el->next = add;
+
+		size++;
+		return add;
+	}
+
+	Node <T> * push_before (T data, Node <T> * el)
+	{
+		if (el == start)
+			return push_front (data);
+
+		Node <T> * add = new Node <T> (data, el->prev, el);
+		el->prev->next = add;
+		el->prev = add;
+
+		size++;
+		return add;
 	}
 
 	T pop_back ()
@@ -134,6 +160,35 @@ public:
 
 		size--;
 		return buff;
+	}
+
+	T pop (Node <T> * & el)
+	{
+		if (el == start)
+			return pop_front ();
+
+		if (el == end)
+			return pop_back ();
+
+		T buff = el->data;
+		el->prev->next = el->next;
+		el->next->prev = el->prev;
+
+		delete (el);
+		el = nullptr;
+
+		return buff;
+	}
+
+	unsigned clear ()
+	{
+		unsigned currSize = size;
+
+		do
+			pop_back ();
+		while (size != 0);
+
+		return currSize;
 	}
 
 protected:
