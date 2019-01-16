@@ -1,15 +1,17 @@
 #pragma once
 #include "Node.h"
 #include <assert.h>
+#include <typeinfo>
 
 template <typename T>
 class List
 {
 public:
-	List () :
+	List (const char * name_ = "unnamed") :
 		start (nullptr),
 		end (nullptr),
-		size (0)
+		size (0),
+		name (name_)
 	{
 
 	}
@@ -182,6 +184,9 @@ public:
 
 	unsigned clear ()
 	{
+		if (size == 0)
+			return 0;
+
 		unsigned currSize = size;
 
 		do
@@ -196,8 +201,28 @@ public:
 		return ErrLevel::None;
 	}
 
+	void dump ()
+	{
+		std::ofstream log;
+		log.open (LOGNAME, std::ofstream::out);
+
+		log << "List \"" << name << "\" (ok) [" << this << "] (" << size << " elements)\n{\n";
+
+		for (Node <T> * i = start; i != nullptr; i = i->next)
+		{
+			log << "\tNode <" << typeid(T).name () << "> [" << i << "] (prev = [" << i->prev << "], data = " << i->data << ", next = [" << i->next << "]);";
+			if (i == start) log << " = START\n";
+			else if (i == end) log << " = END\n";
+			else log << "\n";
+		}
+		log << "}";
+
+		log.close ();
+	}
+
 protected:
 	Node <T> * start, * end;
 	unsigned size;
+	const char * name;
 };
 

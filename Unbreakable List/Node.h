@@ -1,4 +1,10 @@
 #pragma once
+#include <fstream>
+
+#ifndef LOGNAME
+#define LOGNAME "log.txt"
+#endif // !LOGNAME
+
 
 enum ErrLevel
 {
