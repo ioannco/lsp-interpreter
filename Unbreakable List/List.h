@@ -206,11 +206,11 @@ public:
 		std::ofstream log;
 		log.open (LOGNAME, std::ofstream::out);
 
-		log << "List \"" << name << "\" (ok) [" << this << "] (" << size << " elements)\n{\n";
+		log << "List <" << typeid (T).name () << "\"" << name << "\" (ok) [" << this << "] (" << size << " elements)\n{\n";
 
 		for (Node <T> * i = start; i != nullptr; i = i->next)
 		{
-			log << "\tNode <" << typeid(T).name () << "> [" << i << "] (prev = [" << i->prev << "], data = " << i->data << ", next = [" << i->next << "]);";
+			log << "\tNode <" << typeid (T).name () << "> [" << i << "] (prev = [" << i->prev << "], data = " << i->data << ", next = [" << i->next << "]);";
 			if (i == start) log << " = START\n";
 			else if (i == end) log << " = END\n";
 			else log << "\n";
