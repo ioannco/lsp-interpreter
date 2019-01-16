@@ -206,7 +206,7 @@ public:
 		std::ofstream log;
 		log.open (LOGNAME, std::ofstream::out);
 
-		log << "List <" << typeid (T).name () << "\"" << name << "\" (ok) [" << this << "] (" << size << " elements)\n{\n";
+		log << "List <" << typeid (T).name () << "> \"" << name << "\" (ok) [" << this << "] (" << size << " elements)\n{\n";
 
 		for (Node <T> * i = start; i != nullptr; i = i->next)
 		{
