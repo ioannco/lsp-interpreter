@@ -1,10 +1,13 @@
 #pragma once
 #include <fstream>
+#include <cstdio>
+#include <cassert>
 
 #ifndef LOGNAME
 #define LOGNAME "log.txt"
 #endif // !LOGNAME
 
+#define LIST_CRITICAL_ERROR dump(); printf ("ERROR: Critical error in your list %s. Check logs!\n", name); system ("start log.txt"); return ErrLevel::Critical;
 
 enum ErrLevel
 {
@@ -32,8 +35,13 @@ public:
 
 	}
 
-	ErrLevel Ok ()
+	ErrLevel Ok (unsigned listSize)
 	{
+		if (listSize < 3 && prev != nullptr && next != nullptr)
+			return ErrLevel::Critical;
+		else if (listSize > 1 && prev == nullptr && next == nullptr)
+			return ErrLevel::Critical;
+		
 		return ErrLevel::None;
 	}
 

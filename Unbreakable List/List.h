@@ -198,6 +198,63 @@ public:
 
 	ErrLevel Ok ()
 	{
+#ifdef _DEBUG
+
+		Node <T> * prev = nullptr, * curr = start, * next = nullptr;
+
+		unsigned Size = 0;
+
+		while (curr != nullptr)
+		{
+			if (prev != curr->prev)
+			{
+				LIST_CRITICAL_ERROR;
+			}
+
+			if (curr->Ok (size) == ErrLevel::Critical)
+			{
+				LIST_CRITICAL_ERROR;
+			}
+
+			prev = curr;
+			curr = curr->next;
+
+			Size++;
+		}
+
+		if (size != Size || prev != end)
+		{
+			LIST_CRITICAL_ERROR;
+		}
+
+		Size = 0;
+		curr = end;
+
+		while (curr != nullptr)
+		{
+			if (next != curr->next)
+			{
+				LIST_CRITICAL_ERROR;
+			}
+
+			if (curr->Ok (size) == ErrLevel::Critical)
+			{
+				LIST_CRITICAL_ERROR;
+			}
+
+			next = curr;
+			curr = curr->prev;
+
+			Size++;
+		}
+
+		if (size != Size || next != start)
+		{
+			LIST_CRITICAL_ERROR;
+		}
+
+#endif // _DEBUG
+
 		return ErrLevel::None;
 	}
 
