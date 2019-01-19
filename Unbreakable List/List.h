@@ -1,15 +1,17 @@
 #pragma once
 #include "Node.h"
 #include <assert.h>
+#include <typeinfo>
 
 template <typename T>
 class List
 {
 public:
-	List () :
+	List (const char * name_ = "unnamed") :
 		start (nullptr),
 		end (nullptr),
-		size (0)
+		size (0),
+		name (name_)
 	{
 
 	}
@@ -194,8 +196,90 @@ public:
 		return currSize;
 	}
 
+	ErrLevel Ok ()
+	{
+#ifdef _DEBUG
+
+		Node <T> * prev = nullptr, * curr = start, * next = nullptr;
+
+		unsigned Size = 0;
+
+		while (curr != nullptr)
+		{
+			if (prev != curr->prev)
+			{
+				LIST_CRITICAL_ERROR;
+			}
+
+			if (curr->Ok (size) == ErrLevel::Critical)
+			{
+				LIST_CRITICAL_ERROR;
+			}
+
+			prev = curr;
+			curr = curr->next;
+
+			Size++;
+		}
+
+		if (size != Size || prev != end)
+		{
+			LIST_CRITICAL_ERROR;
+		}
+
+		Size = 0;
+		curr = end;
+
+		while (curr != nullptr)
+		{
+			if (next != curr->next)
+			{
+				LIST_CRITICAL_ERROR;
+			}
+
+			if (curr->Ok (size) == ErrLevel::Critical)
+			{
+				LIST_CRITICAL_ERROR;
+			}
+
+			next = curr;
+			curr = curr->prev;
+
+			Size++;
+		}
+
+		if (size != Size || next != start)
+		{
+			LIST_CRITICAL_ERROR;
+		}
+
+#endif // _DEBUG
+
+		return ErrLevel::None;
+	}
+
+	void dump ()
+	{
+		std::ofstream log;
+		log.open (LOGNAME, std::ofstream::out);
+
+		log << "List <" << typeid (T).name () << "> \"" << name << "\" (ok) [" << this << "] (" << size << " elements)\n{\n";
+
+		for (Node <T> * i = start; i != nullptr; i = i->next)
+		{
+			log << "\tNode <" << typeid (T).name () << "> [" << i << "] (prev = [" << i->prev << "], data = " << i->data << ", next = [" << i->next << "]);";
+			if (i == start) log << " = START\n";
+			else if (i == end) log << " = END\n";
+			else log << "\n";
+		}
+		log << "}";
+
+		log.close ();
+	}
+
 protected:
 	Node <T> * start, * end;
 	unsigned size;
+	const char * name;
 };
 

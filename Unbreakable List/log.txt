@@ -1,0 +1,7 @@
+List <int> "unnamed" (ok) [010FFB58] (7 elements)
+{
+	Node <int> [0135DD98] (prev = [00000000], data = 41, next = [0135DC48]); = START
+	Node <int> [0135DC48] (prev = [0135DD98], data = 467, next = [0135DCB8]);
+	Node <int> [0135DCB8] (prev = [0135DC48], data = 334, next = [0135DBD8]);
+	Node <int> [0135DBD8] (prev = [0135DCB8], data = 100, next = [00000000]);
+}
