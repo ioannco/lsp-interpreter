@@ -7,13 +7,15 @@
 #define LOGNAME "log.txt"
 #endif // !LOGNAME
 
-#define LIST_CRITICAL_ERROR dump(); printf ("ERROR: Critical error in your list %s. Check logs!\n", name); system ("start log.txt"); return ErrLevel::Critical;
+#define LIST_CRITICAL_ERROR(a) dump(); printf ("ERROR: Critical error in your list %s. Check logs!\n", name); system ("start log.txt"); return a;
 
 enum ErrLevel
 {
 	None,
-	Warn,
-	Critical
+
+	WrongSize,
+	TransitivityBreak,
+	UnexpectedEnd
 };
 
 template <typename T>
@@ -38,9 +40,9 @@ public:
 	ErrLevel Ok (unsigned listSize)
 	{
 		if (listSize < 3 && prev != nullptr && next != nullptr)
-			return ErrLevel::Critical;
+			return ErrLevel::TransitivityBreak;
 		else if (listSize > 1 && prev == nullptr && next == nullptr)
-			return ErrLevel::Critical;
+			return ErrLevel::TransitivityBreak;
 		
 		return ErrLevel::None;
 	}
