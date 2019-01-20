@@ -1,0 +1,21 @@
+List dump. Critical error: None, lol, wtf?
+
+List <int> "unnamed" (ok) [00BDFD24] (7 elements)
+{
+	//Forward ->>>>>>>>>>>>>>>>
+
+	Node <int> [0108EF98] (prev = [00000000], data = 41, next = [0108F1C8]); = START
+	Node <int> [0108F1C8] (prev = [0108EF98], data = 467, next = [0108EC88]);
+	Node <int> [0108EC88] (prev = [0108F1C8], data = 334, next = [0108ECC0]);
+	Node <int> [0108ECC0] (prev = [0108EC88], data = 100, next = [00000000]);
+
+	//Backwards <<<<<<<<<<<<<<<<-
+
+	Node <int> [0108F158] (prev = [0108EE48], data = 1724, next = [00000000]); = END
+	Node <int> [0108EE48] (prev = [0108EC50], data = 1169, next = [0108F158]);
+	Node <int> [0108EC50] (prev = [0108ECC0], data = 500, next = [0108EE48]);
+	Node <int> [0108ECC0] (prev = [0108EC88], data = 100, next = [00000000]);
+	Node <int> [0108EC88] (prev = [0108F1C8], data = 334, next = [0108ECC0]);
+	Node <int> [0108F1C8] (prev = [0108EF98], data = 467, next = [0108EC88]);
+	Node <int> [0108EF98] (prev = [00000000], data = 41, next = [0108F1C8]); = START
+}

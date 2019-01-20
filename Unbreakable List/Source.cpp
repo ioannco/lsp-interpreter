@@ -9,15 +9,19 @@ int main ()
 {
 	List <int> list;
 
-	list.push_back (3);
-	Node <int> * el = list.push_back (4);
-	list.push_back (6);
-	list.push_after (5, el);
+	for (int i = 0; i < 3; i++)
+		list.push_back (rand () % 2000);
 
-	cout << list.pop_back () << endl;
-	cout << list.pop_back () << endl;
-	cout << list.pop_back () << endl;
-	cout << list.pop_back () << endl;
+	Node <int> * ex = list.push_back (100);
+
+	for (int i = 0; i < 3; i++)
+		list.push_back (rand () % 2000);
+	
+	list.Ok ();
+
+	ex->next = nullptr;
+
+	list.Ok ();
 
 	system ("pause");
 
