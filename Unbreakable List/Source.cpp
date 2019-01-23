@@ -1,13 +1,13 @@
 //Unbreakable List - V 1.0
 
-#include "List.h"
+#include "List.hpp"
 #include <iostream>
 
-using namespace std;
+#define LIST(type, name)  List type name (#name)
 
 int main ()
 {
-	List <int> list;
+	LIST (<int>, list); 
 
 	for (int i = 0; i < 3; i++)
 		list.push_back (rand () % 2000);
@@ -16,12 +16,11 @@ int main ()
 
 	for (int i = 0; i < 3; i++)
 		list.push_back (rand () % 2000);
-	
-	list.Ok ();
+
 
 	ex->next = nullptr;
 
-	list.Ok ();
+	list.push_back (1);
 
 	system ("pause");
 
