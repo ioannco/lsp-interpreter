@@ -184,9 +184,6 @@ public:
 
 	unsigned clear ()
 	{
-		if (size == 0)
-			return 0;
-
 		unsigned currSize = size;
 
 		do
