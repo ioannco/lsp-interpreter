@@ -2,13 +2,14 @@
 #include "Node.h"
 #include <assert.h>
 #include <typeinfo>
+#include <thread>
 
 #ifndef LOGNAME
 #define LOGNAME "log.txt"
 #endif // !LOGNAME
 
 #ifdef _DEBUG
-#define __OK { ErrLevel _errlevel_temp = Ok(); if (_errlevel_temp != ErrLevel::None) { printf ("Critical error in your list named %s.", name); dump (_errlevel_temp); system ("log.txt"); assert (_errlevel_temp == ErrLevel::None); } }
+#define __OK { ErrLevel _errlevel_temp = Ok(); if (_errlevel_temp != ErrLevel::None) { printf ("Critical error in your list named %s.", name); dump (_errlevel_temp); std::this_thread::sleep_for(std::chrono::milliseconds(200)); system ("graph.dot.gd.cairo.png"); assert (_errlevel_temp == ErrLevel::None); } }
 #else 
 #define __OK
 #endif //_DEBUG

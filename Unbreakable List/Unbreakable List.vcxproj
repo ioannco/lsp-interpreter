@@ -122,6 +122,9 @@
     <ClInclude Include="List.hpp" />
     <ClInclude Include="Node.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="graph.dot" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

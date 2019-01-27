@@ -40,6 +40,7 @@ public:
 
 		if ((prev && prev->next != this) || (next && next->prev != this))
 			return ErrLevel::TransitivityBreak;
+		
 
 		if (listSize > 2 && !prev && !next)
 			return ErrLevel::WrongSize;

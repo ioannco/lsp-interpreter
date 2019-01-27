@@ -1,5 +1,7 @@
 //Unbreakable List - V 1.0
 
+#define LOGNAME "graph.dot"
+
 #include "List.hpp"
 #include <iostream>
 
@@ -9,18 +11,10 @@ int main ()
 {
 	LIST (<int>, list); 
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 5; i++)
 		list.push_back (rand () % 2000);
 
-	Node <int> * ex = list.push_back (100);
-
-	for (int i = 0; i < 3; i++)
-		list.push_back (rand () % 2000);
-
-
-	ex->next = nullptr;
-
-	list.push_back (1);
+	list.dump ();
 
 	system ("pause");
 

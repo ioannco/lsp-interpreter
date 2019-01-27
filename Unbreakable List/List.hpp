@@ -135,9 +135,9 @@ T List<T>::pop_back ()
 {
 	if (!this)
 		return T ();
-	__OK;
+	
 	assert (size > 0);
-
+	__OK;
 	if (size == 1)
 	{
 		T buff = start->data;
@@ -153,6 +153,7 @@ T List<T>::pop_back ()
 		T buff = end->data;
 		delete (end);
 		end = start;
+		start->next = nullptr;
 
 		size--;
 		return buff;
@@ -224,7 +225,7 @@ T List<T>::pop (Node <T> * & el)
 	el->next->prev = el->prev;
 
 	delete (el);
-	el = rand () & 49000;;
+	el = nullptr;
 
 	return buff;
 	__OK;
@@ -295,7 +296,9 @@ void List<T>::dump (ErrLevel err)
 	std::ofstream log;
 	log.open (LOGNAME, std::ofstream::out);
 
-	log << "List dump. Critical error: ";
+	log << "digraph D {\n";
+
+	log << "\tlabel = \"List dump. Critical error: ";
 
 	switch (err)
 	{
@@ -311,33 +314,31 @@ void List<T>::dump (ErrLevel err)
 		break;
 	}
 
-	log << "\n\n";
+	log << "\";\n\tlabelloc = \"t\";\n";
 
-	log << "List <" << typeid (T).name () << "> \"" << name << "\" (ok) [" << this << "] (" << size << " elements)\n{\n";
+	log << "\tSTART [shape=plaintext label=\"START\"];\n";
+	log << "\tEND [shape=plaintext label=\"END\"];\n";
+	log << "\tSTART -> nd_" << start << " [style=dashed color=red];\n";
+	log << "\tEND -> nd_" << end << "  [style=dashed color=red];\n\n";
 
-	log << "\t//Forward ->>>>>>>>>>>>>>>>\n\n";
+	log << "\tnd_00000000 [shape = plaintext label=<<table border=\"0\" cellborder=\"0\" cellspacing=\"0\"><tr><td bgcolor=\"yellow\"><font color=\"blue\">nullptr</font></td></tr></table>>];\n\n";
 
-	for (Node <T> * i = start; i != nullptr; i = i->next)
+	int counter = 0;
+
+	for (Node <T> * i = start; i != nullptr && counter <= size; i = i->next, counter++)
 	{
-		log << "\tNode <" << typeid (T).name () << "> [" << i << "] (prev = [" << i->prev << "], data = " << i->data << ", next = [" << i->next << "]);";
-		if (i == start) log << " <--- START\n";
-		else if (i == end) log << " <--- END\n";
-		else log << "\n";
-	}
-
-	log << "\n\t//Backwards <<<<<<<<<<<<<<<<-\n\n";
-
-	for (Node <T> * i = end; i != nullptr; i = i->prev)
-	{
-		log << "\tNode <" << typeid (T).name () << "> [" << i << "] (prev = [" << i->prev << "], data = " << i->data << ", next = [" << i->next << "]);";
-		if (i == start) log << " <--- START\n";
-		else if (i == end) log << " <--- END\n";
-		else log << "\n";
+		log << "\tnd_" << i << " [shape = plaintext label=<";
+		log << "<table border=\"0\" cellborder=\"0\" cellspacing=\"0\">";
+		log << "<tr><td bgcolor=\"blue\"><font color=\"yellow\">" << i << "</font></td></tr><tr><td bgcolor=\"red\"><font color=\"white\">" << i->data << "</font></td></tr></table>>];\n";
+		log << "\tnd_" << i << "->nd_" << i->prev << ";\n";
+		log << "\tnd_" << i << "->nd_" << i->next << ";\n\n";
 	}
 
 	log << "}";
 
 	log.close ();
+
+	system ("dmpcrt.bat");
 }
 
 template<typename T>
