@@ -26,5 +26,13 @@
     <ClInclude Include="List.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="List.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="graph.dot">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -3,11 +3,6 @@
 #include <cstdio>
 #include <cassert>
 
-#ifndef LOGNAME
-#define LOGNAME "log.txt"
-#endif // !LOGNAME
-
-#define LIST_CRITICAL_ERROR(a) dump(); printf ("ERROR: Critical error in your list %s. Check logs!\n", name); system ("start log.txt"); return a;
 
 enum ErrLevel
 {
@@ -39,10 +34,19 @@ public:
 
 	ErrLevel Ok (unsigned listSize)
 	{
-		if (listSize < 3 && prev != nullptr && next != nullptr)
+
+		if (!this)
+			return ErrLevel::None;
+
+		if ((prev && prev->next != this) || (next && next->prev != this))
 			return ErrLevel::TransitivityBreak;
-		else if (listSize > 1 && prev == nullptr && next == nullptr)
-			return ErrLevel::TransitivityBreak;
+		
+
+		if (listSize > 2 && !prev && !next)
+			return ErrLevel::WrongSize;
+
+		if (listSize < 3 && prev && next)
+			return ErrLevel::WrongSize;
 		
 		return ErrLevel::None;
 	}
@@ -51,6 +55,7 @@ public:
 
 	Node<T> * prev;
 	Node<T> * next;
+
 
 };
 
