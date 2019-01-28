@@ -21,9 +21,9 @@ public:
 	List (const char * name_ = "unnamed");
 	~List ();
 	Node <T> * push_back (const T & data);
-	Node <T> * push_front (T data);
-	Node <T> * push_after (T data, Node <T> * el);
-	Node <T> * push_before (T data, Node <T> * el);
+	Node <T> * push_front (const T & data);
+	Node <T> * push_after (const T & data, Node <T> * el);
+	Node <T> * push_before (const T & data, Node <T> * el);
 	T pop_back ();
 	T pop_front ();
 	T pop (Node <T> * & el);

@@ -1,31 +1,35 @@
 digraph D {
-	label = "List dump. Critical error: None, lol, wtf?";
+	label = "List dump. Critical error: Transitivity break. Some strange pointers in one of the elements. Be more careful buddy!!";
 	labelloc = "t";
 	START [shape=plaintext label="START"];
 	END [shape=plaintext label="END"];
-	START -> nd_0020EE98 [style=dashed color=red];
-	END -> nd_0020F1E0  [style=dashed color=red];
+	START -> nd_0083E588 [style=dashed color=red];
+	END -> nd_0083E208  [style=dashed color=red];
 
 	nd_00000000 [shape = plaintext label=<<table border="0" cellborder="0" cellspacing="0"><tr><td bgcolor="yellow"><font color="blue">nullptr</font></td></tr></table>>];
 
-	nd_0020EE98 [shape = plaintext label=<<table border="0" cellborder="0" cellspacing="0"><tr><td bgcolor="blue"><font color="yellow">0020EE98</font></td></tr><tr><td bgcolor="red"><font color="white">41</font></td></tr></table>>];
-	nd_0020EE98->nd_00000000;
-	nd_0020EE98->nd_0020EFB0;
+	nd_0083E588 [shape = plaintext label=<<table border="0" cellborder="0" cellspacing="0"><tr><td bgcolor="blue"><font color="yellow">0083E588</font></td></tr><tr><td bgcolor="red"><font color="white">41</font></td></tr></table>>];
+	nd_0083E588->nd_00000000;
+	nd_0083E588->nd_0083E240;
 
-	nd_0020EFB0 [shape = plaintext label=<<table border="0" cellborder="0" cellspacing="0"><tr><td bgcolor="blue"><font color="yellow">0020EFB0</font></td></tr><tr><td bgcolor="red"><font color="white">467</font></td></tr></table>>];
-	nd_0020EFB0->nd_0020EE98;
-	nd_0020EFB0->nd_0020F138;
+	nd_0083E240 [shape = plaintext label=<<table border="0" cellborder="0" cellspacing="0"><tr><td bgcolor="blue"><font color="yellow">0083E240</font></td></tr><tr><td bgcolor="red"><font color="white">467</font></td></tr></table>>];
+	nd_0083E240->nd_0083E588;
+	nd_0083E240->nd_0083E128;
 
-	nd_0020F138 [shape = plaintext label=<<table border="0" cellborder="0" cellspacing="0"><tr><td bgcolor="blue"><font color="yellow">0020F138</font></td></tr><tr><td bgcolor="red"><font color="white">334</font></td></tr></table>>];
-	nd_0020F138->nd_0020EFB0;
-	nd_0020F138->nd_0020EF40;
+	nd_0083E128 [shape = plaintext label=<<table border="0" cellborder="0" cellspacing="0"><tr><td bgcolor="blue"><font color="yellow">0083E128</font></td></tr><tr><td bgcolor="red"><font color="white">334</font></td></tr></table>>];
+	nd_0083E128->nd_0083E240;
+	nd_0083E128->nd_0083DF68;
 
-	nd_0020EF40 [shape = plaintext label=<<table border="0" cellborder="0" cellspacing="0"><tr><td bgcolor="blue"><font color="yellow">0020EF40</font></td></tr><tr><td bgcolor="red"><font color="white">500</font></td></tr></table>>];
-	nd_0020EF40->nd_0020F138;
-	nd_0020EF40->nd_0020F1E0;
+	nd_0083DF68 [shape = plaintext label=<<table border="0" cellborder="0" cellspacing="0"><tr><td bgcolor="blue"><font color="yellow">0083DF68</font></td></tr><tr><td bgcolor="red"><font color="white">500</font></td></tr></table>>];
+	nd_0083DF68->nd_0083E128;
+	nd_0083DF68->nd_0083E438;
 
-	nd_0020F1E0 [shape = plaintext label=<<table border="0" cellborder="0" cellspacing="0"><tr><td bgcolor="blue"><font color="yellow">0020F1E0</font></td></tr><tr><td bgcolor="red"><font color="white">1169</font></td></tr></table>>];
-	nd_0020F1E0->nd_0020EF40;
-	nd_0020F1E0->nd_00000000;
+	nd_0083E438 [shape = plaintext label=<<table border="0" cellborder="0" cellspacing="0"><tr><td bgcolor="blue"><font color="yellow">0083E438</font></td></tr><tr><td bgcolor="red"><font color="white">1169</font></td></tr></table>>];
+	nd_0083E438->nd_0083DF68;
+	nd_0083E438->nd_0083E208;
+
+	nd_0083E208 [shape = plaintext label=<<table border="0" cellborder="0" cellspacing="0"><tr><td bgcolor="blue"><font color="yellow">0083E208</font></td></tr><tr><td bgcolor="red"><font color="white">3</font></td></tr></table>>];
+	nd_0083E208->nd_00000000;
+	nd_0083E208->nd_00000000;
 
 }

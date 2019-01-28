@@ -57,7 +57,7 @@ Node <T> * List<T>::push_back (const T & data)
 }
 
 template <typename T>
-Node <T> * List<T>::push_front (T data)
+Node <T> * List<T>::push_front (const T & data)
 {
 	if (!this)
 		return nullptr;
@@ -92,7 +92,7 @@ Node <T> * List<T>::push_front (T data)
 }
 
 template <typename T>
-Node <T> * List<T>::push_after (T data, Node <T> * el)
+Node <T> * List<T>::push_after (const T & data, Node <T> * el)
 {
 	if (!this)
 		return nullptr;
@@ -113,7 +113,7 @@ Node <T> * List<T>::push_after (T data, Node <T> * el)
 }
 
 template <typename T>
-Node <T> * List<T>::push_before (T data, Node <T> * el)
+Node <T> * List<T>::push_before (const T & data, Node <T> * el)
 {
 	if (!this)
 		return nullptr;
