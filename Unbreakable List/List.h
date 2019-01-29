@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <typeinfo>
 #include <thread>
+#include <iostream>
 
 #ifndef LOGNAME
 #define LOGNAME "log.txt"

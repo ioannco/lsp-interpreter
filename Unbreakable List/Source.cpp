@@ -7,5 +7,11 @@
 
 int main ()
 {
+	List <LispObj> graph;
+
+	std::string str = "(13 2 34 (4 52 6))";
+
+	parser (&graph, &str, std::map <int, const char *>());
+
 	return 0;
 }

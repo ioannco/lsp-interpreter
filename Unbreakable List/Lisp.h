@@ -1,10 +1,9 @@
 #pragma once
-#include "List.h"
+#include "List.hpp"
 #include <string>  
 #include <typeinfo>
 #include <map>
-
-
+#include <iostream>
 
 class LispObj
 {
@@ -12,9 +11,18 @@ public:
 	union LispObjUnion
 	{
 		int num;
-		char c;
-		char string[];
+		std::string str;
 		List <LispObj> * list;
+
+		LispObjUnion ()
+		{
+
+		}
+
+		~LispObjUnion ()
+		{
+			num = 0;
+		}
 	};
 
 	enum Type
@@ -22,13 +30,68 @@ public:
 		none,
 		string,
 		num,
-		character,
 		oper,
 		list
 	};
 
-	template <class T>
-	LispObj (T var, Type type);
+	LispObj ()
+	{
+
+	}
+
+	LispObj (int num, Type type) :
+		objUnion(),
+		type_(type)
+	{
+		objUnion.num = num;
+	}
+
+	LispObj (std::string str, Type type) :
+		objUnion (),
+		type_ (type)
+	{
+		objUnion.str = str;
+	}
+
+	LispObj (List <LispObj> * list, Type type) :
+		objUnion (),
+		type_ (type)
+	{
+		objUnion.list = list;
+	}
+
+	LispObj (const LispObj & obj) :
+		objUnion (),
+		type_ (obj.type_)
+	{
+		switch (type_)
+		{
+		case LispObj::none: objUnion.num = 0;
+			break;
+
+		case LispObj::string: objUnion.str = obj.objUnion.str;
+			break;
+
+		case LispObj::num: objUnion.num = obj.objUnion.num;
+			break;
+
+		case LispObj::oper: objUnion.num = obj.objUnion.num;
+			break;
+
+		case LispObj::list: objUnion.list = obj.objUnion.list;
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	~LispObj ()
+	{
+
+	}
+
+	
 
 	Type type_;
 	LispObjUnion objUnion;
@@ -54,22 +117,37 @@ List<LispObj> * parser (List<LispObj> * list, std::string * string, const std::m
 			std::string num;
 			num += c;
 
-			char c = (*string)[0];
 			*string = string->substr (1);
+			c = (*string)[0];
 
 			while (c >= '0' && c <= '9')
 			{
 				num += c;
 
-				char c = (*string)[0];
 				*string = string->substr (1);
+				c = (*string)[0];
 			}
 
 			list->push_back (LispObj (std::stoi (num), LispObj::num));
 		}
 		else if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
 		{
+			std::string str;
+			str += c;
 
+			*string = string->substr (1);
+			c = (*string)[0];
+
+			while ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+			{
+				str += c;
+
+
+				*string = string->substr (1);
+				c = (*string)[0];
+			}
+
+			list->push_back (LispObj (str, LispObj::num));
 		}
 		else if (c == ')')
 		{
@@ -78,32 +156,16 @@ List<LispObj> * parser (List<LispObj> * list, std::string * string, const std::m
 		}
 		
 
+		if (string->size () == 0)
+			break;
+
 		*string = string->substr (1);
 	}
 
 	return list;
 }
 
-template<class T>
-inline LispObj::LispObj (T var, Type type) :
-	type_ (type),
-	objUnion ()
+std::ostream & operator << (std::ostream & s, LispObj & v)
 {
-	switch (type)
-	{
-	case LispObj::none: objUnion.num = 0;
-		break;
-	case LispObj::string: objUnion.string = var;
-		break;
-	case LispObj::num: objUnion.num = var;
-		break;
-	case LispObj::character: objUnion.c = var;
-		break;
-	case LispObj::oper: objUnion.num = var;
-		break;
-	case LispObj::list: objUnion.list = var;
-		break;
-	default:
-		break;
-	}
+	return s;
 }
