@@ -7,11 +7,14 @@
 
 int main ()
 {
-	List <LispObj> graph;
+	icl::list <LispObj> obj;
+	std::map <std::string, int> map;
 
-	std::string str = "(13 2 34 (4 52 6))";
+	std::string str = "(1 2 3 4 (1 3 4 5))";
 
-	parser (&graph, &str, std::map <int, const char *>());
+	parser (&obj, &str , map);
+
+	listPrint (obj, map);
 
 	return 0;
 }

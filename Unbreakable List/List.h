@@ -15,27 +15,35 @@
 #define __OK
 #endif //_DEBUG
 
-template <typename T>
-class List
+namespace icl
 {
-public:
-	List (const char * name_ = "unnamed");
-	~List ();
-	Node <T> * push_back (const T & data);
-	Node <T> * push_front (const T & data);
-	Node <T> * push_after (const T & data, Node <T> * el);
-	Node <T> * push_before (const T & data, Node <T> * el);
-	T pop_back ();
-	T pop_front ();
-	T pop (Node <T> * & el);
-	unsigned clear ();
-	ErrLevel Ok ();
-	void dump (ErrLevel err = ErrLevel::None);
-	unsigned getSize ();
+	template <typename T>
+	class list
+	{
+	public:
+		list (const char * name_ = "unnamed");
+		list (const list <T> & other);
+		list <T> & operator = (const list <T> & other);
+		~list ();
+		node <T> * push_back (const T & data);
+		node <T> * push_front (const T & data);
+		node <T> * push_after (const T & data, node <T> * el);
+		node <T> * push_before (const T & data, node <T> * el);
+		T pop_back ();
+		T pop_front ();
+		T pop (node <T> * & el);
+		unsigned clear ();
+		ErrLevel Ok ();
+		void dump (ErrLevel err = ErrLevel::None);
+		unsigned getSize ();
 
-protected:
-	Node <T> * start, * end;
-	unsigned size;
-	const char * name;
-};
+		template <typename T>
+		friend std::ostream & operator << (std::ostream & s, list <T> & v);
 
+	protected:
+		node <T> * start, *end;
+		unsigned size;
+		const char * name;
+	};
+	
+}

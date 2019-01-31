@@ -12,7 +12,7 @@ public:
 	{
 		int num;
 		std::string str;
-		List <LispObj> * list;
+		icl::list <LispObj> * list;
 
 		LispObjUnion ()
 		{
@@ -53,7 +53,7 @@ public:
 		objUnion.str = str;
 	}
 
-	LispObj (List <LispObj> * list, Type type) :
+	LispObj (icl::list <LispObj> * list, Type type) :
 		objUnion (),
 		type_ (type)
 	{
@@ -97,7 +97,7 @@ public:
 	LispObjUnion objUnion;
 };
 
-List<LispObj> * parser (List<LispObj> * list, std::string * string, const std::map<int, const char *> & funcmap)
+icl::list<LispObj> * parser (icl::list<LispObj> * list, std::string * string, const std::map<std::string, int> & funcmap)
 {
 	while (true)
 	{
@@ -106,7 +106,7 @@ List<LispObj> * parser (List<LispObj> * list, std::string * string, const std::m
 		if (c == '(')
 		{
 			*string = string->substr (1);
-			List<LispObj> * newlist = new List<LispObj>;
+			icl::list<LispObj> * newlist = new icl::list<LispObj>;
 
 			parser (newlist, string, funcmap);
 
@@ -147,7 +147,11 @@ List<LispObj> * parser (List<LispObj> * list, std::string * string, const std::m
 				c = (*string)[0];
 			}
 
-			list->push_back (LispObj (str, LispObj::num));
+		
+			if (funcmap.find (str) != funcmap.end ())
+				list->push_back (LispObj (funcmap.at(str), LispObj::oper));
+			else
+				list->push_back (LispObj (str, LispObj::string));
 		}
 		else if (c == ')')
 		{
@@ -168,4 +172,55 @@ List<LispObj> * parser (List<LispObj> * list, std::string * string, const std::m
 std::ostream & operator << (std::ostream & s, LispObj & v)
 {
 	return s;
+}
+
+void listPrint (icl::list <LispObj> list, std::map <std::string, int> funcMap)
+{
+	using std::cout;
+	using std::endl;
+
+	cout << "(";
+
+	while (list.getSize () > 0)
+	{
+		LispObj obj = list.pop_front ();
+
+		switch (obj.type_)
+		{
+
+		case LispObj::Type::num:
+		{
+			cout << obj.objUnion.num; 
+		}
+		break;
+
+		case LispObj::Type::string:
+		{
+			cout << obj.objUnion.str;
+		}
+		break;
+
+		case LispObj::Type::oper:
+		{
+			for (auto i : funcMap)
+			{
+				if (i.second = obj.objUnion.num)
+					cout << i.first;
+			}
+		}
+		break;
+
+		case LispObj::Type::list:
+		{
+			listPrint (*obj.objUnion.list, funcMap);
+		}
+
+		default:
+			break;
+		}
+
+		cout << " ";
+	}
+
+	cout << ")";
 }
