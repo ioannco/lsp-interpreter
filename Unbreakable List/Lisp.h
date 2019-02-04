@@ -4,6 +4,7 @@
 #include <typeinfo>
 #include <map>
 #include <iostream>
+#include <memory>
 
 class LispObj
 {
@@ -11,7 +12,7 @@ public:
 	union LispObjUnion
 	{
 		int num;
-		std::string str;
+		std::string * str;
 		icl::list <LispObj> * list;
 
 		LispObjUnion ()
@@ -46,7 +47,7 @@ public:
 		objUnion.num = num;
 	}
 
-	LispObj (std::string str, Type type) :
+	LispObj (std::string * str, Type type) :
 		objUnion (),
 		type_ (type)
 	{
@@ -88,7 +89,10 @@ public:
 
 	~LispObj ()
 	{
-
+		/*if (type_ == list)
+			delete (objUnion.list);
+		else if (type_ == string)
+			delete (objUnion.str);*/
 	}
 
 	
@@ -97,75 +101,87 @@ public:
 	LispObjUnion objUnion;
 };
 
-icl::list<LispObj> * parser (icl::list<LispObj> * list, std::string * string, const std::map<std::string, int> & funcmap)
-{
-	while (true)
-	{
-		char c = (*string)[0];
 
-		if (c == '(')
+class LispFuncPtr
+{
+public:
+	typedef icl::list <LispObj> lispFunc_t (icl::list <LispObj>);
+	LispFuncPtr (lispFunc_t * in) :
+		ptr (in)
+	{
+
+	}
+
+	lispFunc_t * ptr;
+	
+	icl::list <LispObj> operator () (const icl::list <LispObj> & param)
+	{
+		return ptr (param);
+	}
+
+};
+
+icl::list<LispObj> * parser (icl::list<LispObj> * list, const std::string & string, const std::map<std::string, int> & funcmap, int * iterator, bool onlyAtoms = false)
+{
+	while (*iterator < string.size())
+	{
+		if (string[*iterator] == ' ');
+		else if (string[*iterator] == '(')
 		{
-			*string = string->substr (1);
+			(*iterator)++;
 			icl::list<LispObj> * newlist = new icl::list<LispObj>;
 
-			parser (newlist, string, funcmap);
+			parser (newlist, string, funcmap, iterator);
 
 			list->push_back (LispObj (newlist, LispObj::Type::list));
 		}
-		else if (c >= '0' && c <= '9')
+		else if (string[*iterator] == '\'')
+		{
+			(*iterator) += 2;
+
+			icl::list<LispObj> * newlist = new icl::list<LispObj>;
+
+			parser (newlist, string, funcmap, iterator, true);
+
+			list->push_back (LispObj (newlist, LispObj::Type::list));
+		}
+		else if (string[*iterator] >= '0' && string[*iterator] <= '9')
 		{
 			std::string num;
-			num += c;
+			num += string[*iterator];
 
-			*string = string->substr (1);
-			c = (*string)[0];
-
-			while (c >= '0' && c <= '9')
+			while (string[*iterator + 1] >= '0' && string[*iterator + 1] <= '9')
 			{
-				num += c;
-
-				*string = string->substr (1);
-				c = (*string)[0];
+				(*iterator)++;
+				num += string[*iterator];
 			}
 
 			list->push_back (LispObj (std::stoi (num), LispObj::num));
 		}
-		else if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+		else if (string[*iterator] == ')')
 		{
-			std::string str;
-			str += c;
-
-			*string = string->substr (1);
-			c = (*string)[0];
-
-			while ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
-			{
-				str += c;
-
-
-				*string = string->substr (1);
-				c = (*string)[0];
-			}
-
-		
-			if (funcmap.find (str) != funcmap.end ())
-				list->push_back (LispObj (funcmap.at(str), LispObj::oper));
-			else
-				list->push_back (LispObj (str, LispObj::string));
-		}
-		else if (c == ')')
-		{
-			*string = string->substr (1);
+			(*iterator)++;
 			return list;
 		}
-		
+		else if (string[*iterator] != ' ')
+		{
+			std::string str;
+			str += string[*iterator];
 
-		if (string->size () == 0)
-			break;
+			while (string[*iterator + 1] != ' ')
+			{
+				(*iterator++);
+				str += string[*iterator];
+			}
 
-		*string = string->substr (1);
+			if (!onlyAtoms && funcmap.find (str) != funcmap.end ())
+				list->push_back (LispObj (funcmap.at (str), LispObj::oper));
+			else
+				list->push_back (LispObj (new std::string (str), LispObj::string));
+		}
+
+		(*iterator)++;
 	}
-
 	return list;
 }
 
@@ -196,7 +212,7 @@ void listPrint (icl::list <LispObj> list, std::map <std::string, int> funcMap)
 
 		case LispObj::Type::string:
 		{
-			cout << obj.objUnion.str;
+			cout << *obj.objUnion.str;
 		}
 		break;
 
@@ -204,7 +220,7 @@ void listPrint (icl::list <LispObj> list, std::map <std::string, int> funcMap)
 		{
 			for (auto i : funcMap)
 			{
-				if (i.second = obj.objUnion.num)
+				if (i.second == obj.objUnion.num)
 					cout << i.first;
 			}
 		}
@@ -219,7 +235,7 @@ void listPrint (icl::list <LispObj> list, std::map <std::string, int> funcMap)
 			break;
 		}
 
-		cout << " ";
+		if (list.getSize() > 0) cout << " ";
 	}
 
 	cout << ")";
