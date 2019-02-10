@@ -9,20 +9,24 @@
 class LispObj
 {
 public:
-	union LispObjUnion
+	struct LispObjUnion
 	{
 		int num;
-		std::string * str;
-		icl::list <LispObj> * list;
+		std::string str;
+		icl::list <LispObj> list;
+		bool b;
 
-		LispObjUnion ()
+		LispObjUnion () :
+			num (0),
+			str(),
+			list(),
+			b (false)
 		{
 
 		}
 
 		~LispObjUnion ()
 		{
-			num = 0;
 		}
 	};
 
@@ -32,7 +36,8 @@ public:
 		string,
 		num,
 		oper,
-		list
+		list,
+		boolean
 	};
 
 	LispObj ()
@@ -47,17 +52,25 @@ public:
 		objUnion.num = num;
 	}
 
-	LispObj (std::string * str, Type type) :
+	LispObj (bool b, Type type) :
+		objUnion (),
+		type_ (type)
+	{
+		objUnion.b = b;
+	}
+
+	LispObj (std::string str, Type type) :
 		objUnion (),
 		type_ (type)
 	{
 		objUnion.str = str;
 	}
 
-	LispObj (icl::list <LispObj> * list, Type type) :
+	LispObj (icl::list <LispObj> list, Type type) :
 		objUnion (),
 		type_ (type)
 	{
+		objUnion.list = icl::list<LispObj> ();
 		objUnion.list = list;
 	}
 
@@ -89,10 +102,6 @@ public:
 
 	~LispObj ()
 	{
-		/*if (type_ == list)
-			delete (objUnion.list);
-		else if (type_ == string)
-			delete (objUnion.str);*/
 	}
 
 	
@@ -105,7 +114,7 @@ public:
 class LispFuncPtr
 {
 public:
-	typedef icl::list <LispObj> lispFunc_t (icl::list <LispObj>);
+	typedef LispObj lispFunc_t (LispObj);
 	LispFuncPtr (lispFunc_t * in) :
 		ptr (in)
 	{
@@ -114,12 +123,13 @@ public:
 
 	lispFunc_t * ptr;
 	
-	icl::list <LispObj> operator () (const icl::list <LispObj> & param)
+	LispObj operator () (LispObj & param)
 	{
 		return ptr (param);
 	}
 
 };
+
 
 icl::list<LispObj> * parser (icl::list<LispObj> * list, const std::string & string, const std::map<std::string, int> & funcmap, int * iterator, bool onlyAtoms = false)
 {
@@ -129,9 +139,9 @@ icl::list<LispObj> * parser (icl::list<LispObj> * list, const std::string & stri
 		else if (string[*iterator] == '(')
 		{
 			(*iterator)++;
-			icl::list<LispObj> * newlist = new icl::list<LispObj>;
+			icl::list<LispObj> newlist;
 
-			parser (newlist, string, funcmap, iterator);
+			parser (&newlist, string, funcmap, iterator);
 
 			list->push_back (LispObj (newlist, LispObj::Type::list));
 		}
@@ -139,9 +149,9 @@ icl::list<LispObj> * parser (icl::list<LispObj> * list, const std::string & stri
 		{
 			(*iterator) += 2;
 
-			icl::list<LispObj> * newlist = new icl::list<LispObj>;
+			icl::list<LispObj> newlist;
 
-			parser (newlist, string, funcmap, iterator, true);
+			parser (&newlist, string, funcmap, iterator, true);
 
 			list->push_back (LispObj (newlist, LispObj::Type::list));
 		}
@@ -170,14 +180,18 @@ icl::list<LispObj> * parser (icl::list<LispObj> * list, const std::string & stri
 
 			while (string[*iterator + 1] != ' ')
 			{
-				(*iterator++);
+				(*iterator)++;
 				str += string[*iterator];
 			}
 
-			if (!onlyAtoms && funcmap.find (str) != funcmap.end ())
+			if (str == "T")
+				list->push_back (LispObj (true, LispObj::boolean));
+			else if (str == "NIL")
+				list->push_back (LispObj (false, LispObj::boolean));
+			else if (!onlyAtoms && funcmap.find (str) != funcmap.end ())
 				list->push_back (LispObj (funcmap.at (str), LispObj::oper));
 			else
-				list->push_back (LispObj (new std::string (str), LispObj::string));
+				list->push_back (LispObj (str, LispObj::string));
 		}
 
 		(*iterator)++;
@@ -212,7 +226,7 @@ void listPrint (icl::list <LispObj> list, std::map <std::string, int> funcMap)
 
 		case LispObj::Type::string:
 		{
-			cout << *obj.objUnion.str;
+			cout << obj.objUnion.str;
 		}
 		break;
 
@@ -228,7 +242,7 @@ void listPrint (icl::list <LispObj> list, std::map <std::string, int> funcMap)
 
 		case LispObj::Type::list:
 		{
-			listPrint (*obj.objUnion.list, funcMap);
+			listPrint (obj.objUnion.list, funcMap);
 		}
 
 		default:
@@ -239,4 +253,34 @@ void listPrint (icl::list <LispObj> list, std::map <std::string, int> funcMap)
 	}
 
 	cout << ")";
+}
+
+
+LispObj objCalc (LispObj operand, const std::map <int, LispFuncPtr> & map)
+{
+	if (operand.type_ != LispObj::list)
+		return operand;
+	
+	icl::list <LispObj> temp = operand.objUnion.list;
+	
+	operand.objUnion.list.clear ();
+
+	while (temp.getSize () > 0)
+	{
+		operand.objUnion.list.push_back (objCalc (temp.pop_front (), map));
+	}
+	
+	LispObj tempObj = operand.objUnion.list.pop_front ();
+
+	if (tempObj.type_ != LispObj::oper)
+	{
+		operand.objUnion.list.push_front (tempObj);
+		return operand;
+	}
+
+	LispFuncPtr func = map.at (tempObj.objUnion.num);
+
+	LispObj ret = func (operand);
+
+	return ret;
 }
