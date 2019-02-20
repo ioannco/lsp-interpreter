@@ -371,7 +371,6 @@ namespace icl
 	{
 		return size;
 	}
-
 	
 	template<typename T>
 	std::ostream & operator<<(std::ostream & s, list <T> & v)
@@ -381,6 +380,8 @@ namespace icl
 
 		return s;
 	}
+
+	
 }
 
 

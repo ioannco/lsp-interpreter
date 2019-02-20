@@ -44,6 +44,6 @@ namespace icl
 		node <T> * start, *end;
 		unsigned size;
 		const char * name;
+
 	};
-	
 }

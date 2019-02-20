@@ -1,4 +1,4 @@
-//Unbreakable List - V 1.0
+// Unbreakable List - V 1.0
 
 #define LOGNAME "graph.dot"
 
@@ -109,10 +109,12 @@ int main ()
 
 	int iterator = 0;
 
-	std::cout << ">";
+	std::cout << "===>";
 
 	while (std::getline (std::cin, input))
 	{
+		std::cout << "\n";
+
 		if (input == "exit")
 			break;
 
@@ -127,8 +129,9 @@ int main ()
 		listPrint (obj, map);
 
 		obj.clear ();
-		std::cout << "\n>";
+		std::cout << "\n\n===>";
 	}
+	
 
 	system ("pause");
 

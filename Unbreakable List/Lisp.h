@@ -130,6 +130,8 @@ public:
 
 };
 
+std::map <std::string, int> _FuncMap;
+
 
 icl::list<LispObj> * parser (icl::list<LispObj> * list, const std::string & string, const std::map<std::string, int> & funcmap, int * iterator, bool onlyAtoms = false)
 {
@@ -170,7 +172,6 @@ icl::list<LispObj> * parser (icl::list<LispObj> * list, const std::string & stri
 		}
 		else if (string[*iterator] == ')')
 		{
-			(*iterator)++;
 			return list;
 		}
 		else if (string[*iterator] != ' ')
@@ -178,7 +179,7 @@ icl::list<LispObj> * parser (icl::list<LispObj> * list, const std::string & stri
 			std::string str;
 			str += string[*iterator];
 
-			while (string[*iterator + 1] != ' ')
+			while (string[*iterator + 1] != ' ' && string[*iterator + 1] != ')')
 			{
 				(*iterator)++;
 				str += string[*iterator];
@@ -262,7 +263,6 @@ LispObj objCalc (LispObj operand, const std::map <int, LispFuncPtr> & map)
 		return operand;
 	
 	icl::list <LispObj> temp = operand.objUnion.list;
-	
 	operand.objUnion.list.clear ();
 
 	while (temp.getSize () > 0)
