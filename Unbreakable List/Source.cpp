@@ -97,6 +97,38 @@ LispObj oe (LispObj operand)
 	return LispObj (false, LispObj::boolean);
 }
 
+LispObj oh (LispObj operand)
+{
+	if (operand.objUnion.list.pop_front ().objUnion.num > operand.objUnion.list.pop_front().objUnion.num)
+		return LispObj (true, LispObj::boolean);
+
+	return LispObj (false, LispObj::boolean);
+}
+
+LispObj ol (LispObj operand)
+{
+	if (operand.objUnion.list.pop_front ().objUnion.num < operand.objUnion.list.pop_front ().objUnion.num)
+		return LispObj (true, LispObj::boolean);
+
+	return LispObj (false, LispObj::boolean);
+}
+
+LispObj oeh (LispObj operand)
+{
+	if (operand.objUnion.list.pop_front ().objUnion.num >= operand.objUnion.list.pop_front ().objUnion.num)
+		return LispObj (true, LispObj::boolean);
+
+	return LispObj (false, LispObj::boolean);
+}
+
+LispObj oel (LispObj operand)
+{
+	if (operand.objUnion.list.pop_front ().objUnion.num <= operand.objUnion.list.pop_front ().objUnion.num)
+		return LispObj (true, LispObj::boolean);
+
+	return LispObj (false, LispObj::boolean);
+}
+
 LispObj cond (LispObj operand)
 {
 	return operand;
@@ -146,6 +178,18 @@ int main (int argc, char ** argv)
 
 	map.insert (std::pair <std::string, int> ("defun", 11));
 	map2.insert (std::pair <int, LispFuncPtr> (11, defun));
+
+	map.insert (std::pair <std::string, int> (">", 12));
+	map2.insert (std::pair <int, LispFuncPtr> (12, oh));
+
+	map.insert (std::pair <std::string, int> ("<", 13));
+	map2.insert (std::pair <int, LispFuncPtr> (13, ol));
+
+	map.insert (std::pair <std::string, int> (">=", 14));
+	map2.insert (std::pair <int, LispFuncPtr> (14, oeh));
+
+	map.insert (std::pair <std::string, int> ("<=", 15));
+	map2.insert (std::pair <int, LispFuncPtr> (15, oel));
 
 	std::map <int, LispObj> lispFuncMap;
 
