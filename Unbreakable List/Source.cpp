@@ -6,6 +6,8 @@
 #include "Lisp.h"
 #include <iostream>
 
+std::string fileRead (std::string fileName);
+
 LispObj op (LispObj operand)
 {
 	int summ = operand.objUnion.list.pop_front ().objUnion.num;
@@ -77,8 +79,36 @@ LispObj cons (LispObj operand)
 	return list;
 }
 
-int main ()
+LispObj null (LispObj operand)
 {
+	operand = operand.objUnion.list.pop_front ();
+
+	if ((operand.type_ == LispObj::boolean && !operand.objUnion.b) || (operand.type_ == LispObj::list && operand.objUnion.list.getSize () == 0))
+		return LispObj (true, LispObj::boolean);
+
+	return LispObj (false, LispObj::boolean);
+}
+
+LispObj oe (LispObj operand)
+{
+	if (operand.objUnion.list.pop_front() == operand.objUnion.list.pop_front())
+		return LispObj (true, LispObj::boolean);
+
+	return LispObj (false, LispObj::boolean);
+}
+
+LispObj cond (LispObj operand)
+{
+	return operand;
+}
+
+LispObj defun (LispObj operand)
+{
+	return operand;
+}
+
+int main (int argc, char ** argv)
+{	
 	icl::list <LispObj> obj;
 
 	std::map <std::string, int> map;
@@ -105,9 +135,54 @@ int main ()
 	map.insert (std::pair <std::string, int> ("cons", 7));
 	map2.insert (std::pair <int, LispFuncPtr> (7, cons));
 
+	map.insert (std::pair <std::string, int> ("null", 8));
+	map2.insert (std::pair <int, LispFuncPtr> (8, null));
+
+	map.insert (std::pair <std::string, int> ("=", 9));
+	map2.insert (std::pair <int, LispFuncPtr> (9, oe));
+
+	map.insert (std::pair <std::string, int> ("cond", 10));
+	map2.insert (std::pair <int, LispFuncPtr> (10, cond));
+
+	map.insert (std::pair <std::string, int> ("defun", 11));
+	map2.insert (std::pair <int, LispFuncPtr> (11, defun));
+
+	std::map <int, LispObj> lispFuncMap;
+
 	std::string input;
 
 	int iterator = 0;
+
+	NEED_TO_WRITE = false;
+
+	{
+		input = std::string ("(") + fileRead("defuns.lsp") + std::string (")");
+		parser (&obj, input, map, &iterator);
+		iterator = 0;
+
+		LispObj temp = obj.pop_front ();
+		temp = objCalc (temp, map2, lispFuncMap, map);
+		obj.clear ();
+	}
+
+	NEED_TO_WRITE = true;
+
+	if (argc == 2)
+	{
+		input = fileRead (argv[1]);
+		parser (&obj, input, map, &iterator);
+		iterator = 0;
+
+		LispObj temp = obj.pop_front ();
+		temp = objCalc (temp, map2, lispFuncMap, map);
+		obj.clear ();
+
+		std::cout << argv[1] << ": ";
+		listPrint (temp, map, std::cout);
+		std::cout << "\n";
+	}
+
+	input = "";
 
 	std::cout << "===>";
 
@@ -122,18 +197,15 @@ int main ()
 		iterator = 0;
 
 		LispObj temp = obj.pop_front ();
-		temp = objCalc (temp, map2);
+		temp = objCalc (temp, map2, lispFuncMap, map);
 		obj.clear ();
 		obj.push_front (temp);
 
-		listPrint (obj, map);
+		listPrint (temp, map, std::cout);
 
 		obj.clear ();
 		std::cout << "\n\n===>";
 	}
-	
-
-	system ("pause");
 
 	return 0;
 }
@@ -149,3 +221,30 @@ int main ()
 // (
 //	 sqrt (+ (* (- lambda[0].val lambda[2].val) (- x1 x2)) (* (- y1 y2) (- y1 y2)))
 // ))
+
+std::string fileRead (std::string fileName)
+{
+	int length;
+	char * buffer;
+
+	std::ifstream is;
+	is.open (fileName, std::ios::binary);
+
+	// get length of file:
+	is.seekg (0, std::ios::end);
+	length = is.tellg ();
+	is.seekg (0, std::ios::beg);
+
+	// allocate memory:
+	buffer = new char[length];
+
+	// read data as a block:
+	is.read (buffer, length);
+	is.close ();
+
+	std::string output = buffer;
+
+	delete[] buffer;
+
+	return output;
+}
