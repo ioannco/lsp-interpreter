@@ -150,7 +150,7 @@ icl::list<LispObj> * parser (icl::list<LispObj> * list, const std::string & stri
 {
 	while (*iterator < string.size())
 	{
-		if (string[*iterator] == ' ' || string[*iterator] == '\n' || string[*iterator] == '\r');
+		if (string[*iterator] == ' ' || string[*iterator] == '\n' || string[*iterator] == '\r' || string[*iterator] == '\t');
 		else if (string[*iterator] == '(')
 		{
 			(*iterator)++;
@@ -288,37 +288,6 @@ LispObj condCalc (LispObj operand, std::map <int, LispFuncPtr> & map, std::map <
 	}
 }
 
-LispObj funcCreate (LispObj funcObj, std::map <int, LispObj> & lispFuncMap, std::map <std::string, int> & nameMap)
-{
-	std::ofstream fout ("defuns.lsp", std::ios_base::app);
-
-	funcObj.objUnion.list.push_front (LispObj (std::string("defun"), LispObj::string));
-
-	if (NEED_TO_WRITE)
-	{
-		listPrint (funcObj, nameMap, fout);
-		fout << std::endl;
-	}
-
-	fout.close ();
-	funcObj.objUnion.list.pop_front ();
-
-	int freeCell = -1;
-	for (int i = -1; true; i--)
-		if (lispFuncMap.find (i) == lispFuncMap.end ())
-		{
-			freeCell = i;
-			break;
-		}
-
-	std::string name = funcObj.objUnion.list.pop_front ().objUnion.str;
-
-	nameMap.insert (std::pair <std::string, int> (name, freeCell));
-	lispFuncMap.insert (std::pair <int, LispObj> (freeCell, funcObj));
-
-	return LispObj (name, LispObj::string);
-}
-
 LispObj lambdaReplace (LispObj obj, const std::map <std::string, LispObj> & lambdaMap)
 {
 	if (obj.type_ == LispObj::list)
@@ -343,6 +312,45 @@ LispObj lambdaReplace (LispObj obj, const std::map <std::string, LispObj> & lamb
 		return obj;
 }
 
+
+LispObj funcCreate (LispObj funcObj, std::map <int, LispObj> & lispFuncMap, std::map <std::string, int> & nameMap)
+{
+	std::ofstream fout ("defuns.lsp", std::ios_base::app);
+
+	funcObj.objUnion.list.push_front (LispObj (std::string("defun"), LispObj::string));
+
+	if (NEED_TO_WRITE)
+	{
+		listPrint (funcObj, nameMap, fout);
+		fout << std::endl;
+	}
+
+	fout.close ();
+	funcObj.objUnion.list.pop_front ();
+
+	int freeCell = -1;
+	for (int i = -1; true; i--)
+		if (lispFuncMap.find (i) == lispFuncMap.end ())
+		{
+			freeCell = i;
+			break;
+		}
+
+	LispObj funcOp (freeCell, LispObj::oper);
+
+	std::string name = funcObj.objUnion.list.pop_front ().objUnion.str;
+
+	std::map <std::string, LispObj> lambdaList;
+	lambdaList.insert (std::pair <std::string, LispObj> (name, funcOp));
+
+	funcObj = lambdaReplace (funcObj, lambdaList);
+
+	nameMap.insert (std::pair <std::string, int> (name, freeCell));
+	lispFuncMap.insert (std::pair <int, LispObj> (freeCell, funcObj));
+
+	return LispObj (name, LispObj::string);
+}
+
 LispObj lispFuncCalc (LispObj operand, int func, std::map <int, LispFuncPtr> & map, std::map <int, LispObj> & lispFuncMap, std::map <std::string, int> & nameMap)
 {
 	LispObj lambdaList = operand;
@@ -358,6 +366,8 @@ LispObj lispFuncCalc (LispObj operand, int func, std::map <int, LispFuncPtr> & m
 
 	operand = lambdaReplace (temp.objUnion.list.pop_front (), lambdaMap);
 
+	//listPrint (operand, nameMap, std::cout);
+
 	return objCalc (operand, map, lispFuncMap, nameMap);
 }
 
@@ -365,6 +375,9 @@ LispObj objCalc (LispObj operand, std::map <int, LispFuncPtr> & map, std::map <i
 {
 	if (operand.type_ != LispObj::list)
 		return operand;
+
+	//listPrint (operand, nameMap, std::cout);
+	//std::cout << '\n';
 
 	LispObj tempObj = operand.objUnion.list.pop_front ();
 	

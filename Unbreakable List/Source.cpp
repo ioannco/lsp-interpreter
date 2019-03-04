@@ -5,6 +5,7 @@
 #include "Windows.h"
 #include "Lisp.h"
 #include <iostream>
+#include "Vector.h"
 
 std::string fileRead (std::string fileName);
 
@@ -59,6 +60,10 @@ LispObj divide (LispObj operand)
 LispObj cdr (LispObj operand)
 {
 	LispObj list = operand.objUnion.list.pop_front ();
+
+	if (list.objUnion.list.getSize () == 0)
+		return list;
+
 	list.objUnion.list.pop_front ();
 
 	return list;
@@ -66,7 +71,14 @@ LispObj cdr (LispObj operand)
 
 LispObj car (LispObj operand)
 {
-	return operand.objUnion.list.pop_front ().objUnion.list.pop_front();
+	if (operand.objUnion.list.getSize() == 0)
+		return operand;
+
+	LispObj list = operand.objUnion.list.pop_front ();
+	if (list.objUnion.list.getSize() == 0)
+		return list;
+
+	return list.objUnion.list.pop_front();
 }
 
 LispObj cons (LispObj operand)
@@ -139,12 +151,29 @@ LispObj defun (LispObj operand)
 	return operand;
 }
 
-int main (int argc, char ** argv)
+int main ()
+{
+	icl::vector<int> vec (10);
+
+	vec.push_back (1);
+
+	std::cout << vec[12] << "\n" << vec.size ();
+
+	system ("pause");
+}
+
+int mmain (int argc, char ** argv)
 {	
+
 	icl::list <LispObj> obj;
 
 	std::map <std::string, int> map;
 	std::map <int, LispFuncPtr> map2;
+
+	/*const char * temp = (const char *) this;
+	int summ = 0;
+	for (int i = 0; i <= sizeof (*this); i++)
+		summ += temp[i];*/
 
 	map.insert (std::pair <std::string, int> ("+", 1));
 	map2.insert (std::pair <int, LispFuncPtr> (1, op));
@@ -226,9 +255,11 @@ int main (int argc, char ** argv)
 		std::cout << "\n";
 	}
 
+	listPrint (lispFuncMap[-2], map, std::cout);
+
 	input = "";
 
-	std::cout << "===>";
+	std::cout << "===>"; 
 
 	while (std::getline (std::cin, input))
 	{
@@ -271,18 +302,16 @@ std::string fileRead (std::string fileName)
 	int length;
 	char * buffer;
 
+	std::ofstream os (fileName, std::ios::app);
+	os.close ();
+
 	std::ifstream is;
 	is.open (fileName, std::ios::binary);
 
-	// get length of file:
 	is.seekg (0, std::ios::end);
 	length = is.tellg ();
 	is.seekg (0, std::ios::beg);
-
-	// allocate memory:
 	buffer = new char[length];
-
-	// read data as a block:
 	is.read (buffer, length);
 	is.close ();
 

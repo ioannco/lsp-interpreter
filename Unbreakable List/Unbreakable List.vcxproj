@@ -133,6 +133,8 @@
     <ClInclude Include="List.h" />
     <ClInclude Include="List.hpp" />
     <ClInclude Include="Node.h" />
+    <ClInclude Include="Stack.h" />
+    <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="graph.dot" />
