@@ -1,3 +1,7 @@
-# Unbreakable-List
+# Self-made basic LISP-like language interpreter
 
-This project is first step to lisp interpretator. I've made accent on dump and debugger system. 
+This is repo with my school-years project of LISP language interpreter. It was originally written for windows and msvc, but recently ported on CMAKE with *nix support
+
+TODO:
+- Remeber/figure out how the concept was originally written
+- Write a detailed installation/run instructions
