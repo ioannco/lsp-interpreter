@@ -37,7 +37,6 @@ namespace icl
 		void dump (ErrLevel err = ErrLevel::None);
 		unsigned getSize ();
 
-		template <typename T>
 		friend std::ostream & operator << (std::ostream & s, list <T> & v);
 
 	protected:

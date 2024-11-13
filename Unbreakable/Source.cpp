@@ -1,8 +1,7 @@
-// Unbreakable List - V 1.0
+// Unbreakable - V 1.0
 
 #define LOGNAME "graph.dot"
 
-#include "Windows.h"
 #include "Lisp.h"
 #include <iostream>
 #include "Vector.h"
@@ -151,18 +150,7 @@ LispObj defun (LispObj operand)
 	return operand;
 }
 
-int main ()
-{
-	icl::vector<int> vec (10);
-
-	vec.push_back (1);
-
-	std::cout << vec[12] << "\n" << vec.size ();
-
-	system ("pause");
-}
-
-int mmain (int argc, char ** argv)
+int main (int argc, char ** argv)
 {	
 
 	icl::list <LispObj> obj;
